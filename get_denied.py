@@ -1,12 +1,12 @@
 import pandas as pd
 
 
-def get_indeferidos(path):
+def get_denied(path):
     df = pd.read_excel(path, sheet_name="BD2")
 
-    df_indeferidos = df[df["Conclusao"] == "Indeferido"]
+    df_denied = df[df["Conclusao"] == "Indeferido"]
 
-    processes = df_indeferidos["Processo"]
+    processes = df_denied["Processo"]
     processes = processes.tolist()
     
     return processes
