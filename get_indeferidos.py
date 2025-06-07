@@ -1,6 +1,5 @@
 import pandas as pd
 
-from config import PATH
 
 def get_indeferidos(path):
     df = pd.read_excel(path, sheet_name="BD2")
