@@ -8,6 +8,7 @@ from config import ATF_URL, PROCESS_ATF_PATH, USERNAME_, PASSWORD
 from read_atf import read_atf
 from save_pdf import save_pdf
 
+
 driver = webdriver.Chrome()
 driver.get(ATF_URL)
 
@@ -69,44 +70,67 @@ radio_button.click()
 
 atf_processes = read_atf(PROCESS_ATF_PATH)
 
+erro_atf = []
+
 for process in atf_processes:
-        atf_process = WebDriverWait(driver, 30).until(
+        atf_process = WebDriverWait(driver, 60).until(
                 EC.presence_of_element_located((By.NAME, "edtCriterio"))
         )
         atf_process.clear()         
         atf_process.send_keys(process)
 
-        search_button = WebDriverWait(driver, 30).until(
+        search_button = WebDriverWait(driver, 60).until(
                 EC.element_to_be_clickable((By.NAME, "btnPesquisar"))
         )
         search_button.click()
         
         original_window = driver.current_window_handle
         
-        
-        parecer_link = WebDriverWait(driver, 30).until(
-                EC.element_to_be_clickable((
-                        By.XPATH,
-                        "//a[contains(@onclick, 'aoClicarDetalharParecLink')]"
-                ))
-        )
-        #parecer_number = parecer_link.text.strip()
-        #parecer_link.click()
-        
-        WebDriverWait(driver, 30).until(lambda d: len(d.window_handles) == 2)
-        
-        new_window = [window for window in driver.window_handles if window != original_window][0]
-        
-        driver.switch_to.window(new_window)
-        
-        pdf_url = driver.current_url
-        save_pdf(pdf_url, process)
-        #save_pdf(pdf_url,parecer_number)
-        
-        driver.close()
-        driver.switch_to.window(original_window)
-        time.sleep(3000)
+        try:
+                parecer_link = WebDriverWait(driver, 60).until(
+                        EC.element_to_be_clickable((
+                                By.XPATH,
+                                "//a[contains(@onclick, 'aoClicarDetalharParecLink')]"
+                        ))
+                )
+                #parecer_number = parecer_link.text.strip()
+                parecer_link.click()
+                
+                WebDriverWait(driver, 60).until(lambda d: len(d.window_handles) == 2)
+                
+                new_window = [window for window in driver.window_handles if window != original_window][0]
+                
 
+                driver.switch_to.window(new_window)
+                pdf_url = driver.current_url
 
-time.sleep(3000)
+                save_pdf(pdf_url, process)
+                #save_pdf(pdf_url,parecer_number)
+
+                driver.close()
+
+                driver.switch_to.window(original_window)
+
+                WebDriverWait(driver, 60).until(
+                        EC.frame_to_be_available_and_switch_to_it((By.ID, "contents"))
+                )
+                
+                WebDriverWait(driver, 60).until(
+                        EC.frame_to_be_available_and_switch_to_it((By.ID, "principal"))
+                )
+        except Exception as e:
+                erro_atf.append(process)
+                print(f"Erro no processo {process}: {e}")
+                
+                WebDriverWait(driver, 60).until(
+                        EC.frame_to_be_available_and_switch_to_it((By.ID, "contents"))
+                )
+                
+                WebDriverWait(driver, 60).until(
+                        EC.frame_to_be_available_and_switch_to_it((By.ID, "principal"))
+                )
+                continue
+
 driver.quit()
+
+print(erro_atf)
