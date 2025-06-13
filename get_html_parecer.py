@@ -6,7 +6,6 @@ import time
 
 from config import ATF_URL, PROCESS_ATF_PATH, USERNAME_, PASSWORD
 from read_atf import read_atf
-from save_pdf import save_pdf
 
 
 driver = webdriver.Chrome()
