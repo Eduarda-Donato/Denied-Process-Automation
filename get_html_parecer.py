@@ -104,9 +104,14 @@ for process in atf_processes:
                 driver.switch_to.window(new_window)
                 pdf_url = driver.current_url
 
-                save_pdf(pdf_url, process)
+                #save_pdf(pdf_url, process)
                 #save_pdf(pdf_url,parecer_number)
-
+                
+                time.sleep(2)
+                with open(f"html\\{process}.html", "w", encoding='utf-8') as f:
+                        f.write(driver.page_source)
+                time.sleep(2)
+                
                 driver.close()
 
                 driver.switch_to.window(original_window)
@@ -121,14 +126,6 @@ for process in atf_processes:
         except Exception as e:
                 erro_atf.append(process)
                 print(f"Erro no processo {process}: {e}")
-                
-                WebDriverWait(driver, 60).until(
-                        EC.frame_to_be_available_and_switch_to_it((By.ID, "contents"))
-                )
-                
-                WebDriverWait(driver, 60).until(
-                        EC.frame_to_be_available_and_switch_to_it((By.ID, "principal"))
-                )
                 continue
 
 driver.quit()
