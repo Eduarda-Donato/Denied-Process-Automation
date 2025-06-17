@@ -1,0 +1,42 @@
+import os
+import json
+from bs4 import BeautifulSoup
+
+from config import HTML_PATH, PROCESS_ATF_PATH, JSON_EMENTA_PATH
+
+
+with open(PROCESS_ATF_PATH, 'r', encoding='utf-8') as f:
+    dados = json.load(f)
+    
+selector = "p.MsoNormal, p.MsoBodyTextIndent2, p.MsoBlockText, p.MsoBodyText, .Default b, h1, h2, p"
+
+
+for obj in dados:
+    atf = obj.get("atf")
+    if not atf:
+        obj["ementa"] = ""
+        continue
+
+    ementa = ""
+
+    fname = f"{atf}.html"
+    html_path = os.path.join(HTML_PATH, fname)
+
+    if os.path.exists(html_path):
+        with open(html_path, "r", encoding='utf-8') as f:
+            html = f.read()
+
+        soup = BeautifulSoup(html, "html.parser")
+
+        elements = soup.select(selector)
+        for el in elements:
+            text = el.get_text().strip()
+            if "INDEFERIMENTO" in text or "PEDIDO DENEGADO" in text:
+                ementa = text
+                break
+            
+    obj['ementa'] = ementa
+    
+with open("JSON_EMENTA_PATH", 'w', encoding='utf-8') as f_out:
+    json.dump(dados, f_out, ensure_ascii=False, indent=4)
+    
