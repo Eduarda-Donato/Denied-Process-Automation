@@ -6,6 +6,7 @@ load_dotenv()
 
 USERNAME_ = os.getenv("USERNAME_")
 PASSWORD = os.getenv("PASSWORD")
+API_KEY = os.getenv("API_KEY")
 
 #DENIED_PATH = "S:\\GET\\Geral\\PROCESSOS MENSAIS GET\\2025\\"
 #DENIED_MONTH = "MAIO\\GET_ANÁLISE_22_24_V05_2025 05 31 maio.xlsx"
